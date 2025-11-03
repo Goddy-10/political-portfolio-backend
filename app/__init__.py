@@ -12,6 +12,7 @@ from flask_jwt_extended import JWTManager
 from .database import db
 import os
 
+
 # Initialize Flask extensions (defined globally)
 bcrypt = Bcrypt()
 jwt = JWTManager()
@@ -25,7 +26,8 @@ def create_app():
     app.config.from_pyfile("config.py", silent=False)
 
     # Enable CORS for the frontend (React)
-    CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
+    # CORS(app, resources={r"/*":{"origins":["http://localhost:5173"]}})
+    CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173"], supports_credentials=True)
 
     # Initialize extensions
     db.init_app(app)
@@ -33,14 +35,18 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
+    from app import models
+
+
     # Register blueprints
     from .routes.auth import auth_bp
     from .routes.feedback import feedback_bp
     from .routes.slideshow import slideshow_bp
-
+    from .routes.dashboard import dashboard_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(feedback_bp, url_prefix="/api/feedback")
-    app.register_blueprint(slideshow_bp, url_prefix="/api/slideshow")
+    app.register_blueprint(slideshow_bp, url_prefix="/api/slides")
+    app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
 
     # Simple health route
     @app.route("/")
