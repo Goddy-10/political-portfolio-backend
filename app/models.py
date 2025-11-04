@@ -17,6 +17,11 @@ class Admin(db.Model):
     role = db.Column(db.String(20), nullable=False, default="admin")  # "admin" or "super_admin"
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
+    @property
+    def is_super(self):
+        return self.role == "superadmin"
+
     # 🟣 Initialize Admin with password hashing
     def __init__(self, username, password, role="admin"):
         self.username = username
@@ -25,7 +30,7 @@ class Admin(db.Model):
 
     # 🟣 Set password (hashed)
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password).decode("utf-8")
+        self.password_hash = generate_password_hash(password)
 
     # 🟣 Check password
     def check_password(self, password):
@@ -68,3 +73,9 @@ class Slideshow(db.Model):
 
     def __repr__(self):
         return f"<Slide {self.caption or 'No Caption'}>"
+    
+
+
+class HeroImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    image_url = db.Column(db.String(255))

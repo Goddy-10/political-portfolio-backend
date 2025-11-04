@@ -39,6 +39,8 @@ def create_app():
 
 
     # Register blueprints
+    from .routes.hero import hero_bp
+    from .routes.admin import admin_bp
     from .routes.auth import auth_bp
     from .routes.feedback import feedback_bp
     from .routes.slideshow import slideshow_bp
@@ -47,6 +49,8 @@ def create_app():
     app.register_blueprint(feedback_bp, url_prefix="/api/feedback")
     app.register_blueprint(slideshow_bp, url_prefix="/api/slides")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(hero_bp, url_prefix="/api/hero")
 
     # Simple health route
     @app.route("/")

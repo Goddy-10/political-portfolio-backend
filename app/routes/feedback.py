@@ -107,3 +107,28 @@ def get_by_region():
         })
 
     return jsonify(data), 200
+
+
+
+
+
+# 🟣 Get Reasons for "No" Votes
+@feedback_bp.route("/reasons", methods=["GET"])
+def get_no_reasons():
+    """
+    Returns a list of reasons provided by users who voted 'No'.
+    [
+        {"reason": "No access to polling station"},
+        {"reason": "Lack of ID"},
+        {"reason": "Disinterest in politics"}
+    ]
+    """
+    results = (
+        db.session.query(Feedback.reason)
+        .filter(Feedback.will_vote == False, Feedback.reason.isnot(None))
+        .all()
+    )
+
+    data = [{"reason": r.reason} for r in results if r.reason.strip()]
+    return jsonify(data), 200
+

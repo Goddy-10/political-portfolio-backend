@@ -72,7 +72,6 @@ def get_by_ward():
 
 
 
-
 # 🟣 Breakdown by Village
 @dashboard_bp.route("/by-village", methods=["GET"])
 def get_by_village():
@@ -113,3 +112,31 @@ def get_quick_stats():
         "total_subcounties": total_subcounties,
         "latest_feedback": latest_feedback.isoformat() if latest_feedback else None
     }), 200
+
+
+# 🟣 Breakdown of "No" vote reasons by Ward & Village
+@dashboard_bp.route("/no-reasons", methods=["GET"])
+def get_no_reasons():
+    """
+    Returns list of reasons given by users who voted 'No',
+    grouped by ward and village for admin insights.
+    """
+    results = (
+        db.session.query(
+            Feedback.ward,
+            Feedback.village,
+            Feedback.reason
+        )
+        .filter(Feedback.will_vote == False, Feedback.reason.isnot(None))
+        .all()
+    )
+
+    data = []
+    for r in results:
+        data.append({
+            "ward": r.ward,
+            "village": r.village,
+            "reason": r.reason
+        })
+
+    return jsonify(data), 200
