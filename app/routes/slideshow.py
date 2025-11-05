@@ -27,60 +27,76 @@ def allowed_file(filename):
 
 
 # 🟣 Upload Slide (Hybrid: Local + Cloudinary)
+# @slideshow_bp.route('/upload', methods=['POST'])
+# def upload_slide():
+#     """
+#     Handles both local and cloud uploads.
+#     Accepts multipart/form-data:
+#       - image: file
+#       - caption: text
+#       - uploaded_by: text
+#     """
+
+#     if 'image' not in request.files:
+#         return jsonify({"error": "No image file provided"}), 400
+
+#     image = request.files['image']
+#     caption = request.form.get('caption')
+#     uploaded_by = request.form.get('uploaded_by')
+
+#     if not uploaded_by:
+#         return jsonify({"error": "Uploader name is required"}), 400
+
+#     if image.filename == '' or not allowed_file(image.filename):
+#         return jsonify({"error": "Invalid or missing image file"}), 400
+
+#     filename = secure_filename(image.filename)
+
+#     try:
+#         # 🟣 If running on Render (production), upload to Cloudinary
+#         if os.getenv("RENDER") or os.getenv("CLOUDINARY_CLOUD_NAME"):
+#             upload_result = cloudinary.uploader.upload(image)
+#             image_url = upload_result.get('secure_url')
+#         else:
+#             # 🟣 Otherwise, save locally (development)
+#             upload_folder = os.path.join(current_app.root_path, 'uploads', 'slides')
+#             os.makedirs(upload_folder, exist_ok=True)
+#             local_path = os.path.join(upload_folder, filename)
+#             image.save(local_path)
+#             image_url = f"/uploads/slides/{filename}"  # Served locally
+
+#         # Save to DB
+#         slide = Slideshow(
+#             image_url=image_url,
+#             caption=caption,
+#             uploaded_by=uploaded_by
+#         )
+#         db.session.add(slide)
+#         db.session.commit()
 @slideshow_bp.route('/upload', methods=['POST'])
-def upload_slide():
-    """
-    Handles both local and cloud uploads.
-    Accepts multipart/form-data:
-      - image: file
-      - caption: text
-      - uploaded_by: text
-    """
+def upload_slide_json():
+    data = request.get_json()
+    image_url = data.get("image_url")
+    caption = data.get("caption")
+    uploaded_by = data.get("uploaded_by")
 
-    if 'image' not in request.files:
-        return jsonify({"error": "No image file provided"}), 400
+    if not image_url or not caption or not uploaded_by:
+        return jsonify({"error": "Missing required fields"}), 400
 
-    image = request.files['image']
-    caption = request.form.get('caption')
-    uploaded_by = request.form.get('uploaded_by')
+    slide = Slideshow(image_url=image_url, caption=caption, uploaded_by=uploaded_by)
+    db.session.add(slide)
+    db.session.commit()
 
-    if not uploaded_by:
-        return jsonify({"error": "Uploader name is required"}), 400
+    return jsonify({"message": "Slide uploaded successfully", "image_url": image_url}), 201
 
-    if image.filename == '' or not allowed_file(image.filename):
-        return jsonify({"error": "Invalid or missing image file"}), 400
 
-    filename = secure_filename(image.filename)
+        # return jsonify({
+        #     "message": "Slide uploaded successfully",
+        #     "image_url": image_url
+        # }), 201
 
-    try:
-        # 🟣 If running on Render (production), upload to Cloudinary
-        if os.getenv("RENDER") or os.getenv("CLOUDINARY_CLOUD_NAME"):
-            upload_result = cloudinary.uploader.upload(image)
-            image_url = upload_result.get('secure_url')
-        else:
-            # 🟣 Otherwise, save locally (development)
-            upload_folder = os.path.join(current_app.root_path, 'uploads', 'slides')
-            os.makedirs(upload_folder, exist_ok=True)
-            local_path = os.path.join(upload_folder, filename)
-            image.save(local_path)
-            image_url = f"/uploads/slides/{filename}"  # Served locally
-
-        # Save to DB
-        slide = Slideshow(
-            image_url=image_url,
-            caption=caption,
-            uploaded_by=uploaded_by
-        )
-        db.session.add(slide)
-        db.session.commit()
-
-        return jsonify({
-            "message": "Slide uploaded successfully",
-            "image_url": image_url
-        }), 201
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
 
 
 # 🟣 Get All Slides
