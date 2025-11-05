@@ -50,7 +50,7 @@ def create_app():
     app.register_blueprint(slideshow_bp, url_prefix="/api/slides")
     app.register_blueprint(dashboard_bp, url_prefix="/api/dashboard")
     app.register_blueprint(admin_bp, url_prefix="/api/admin")
-    app.register_blueprint(hero_bp)
+    app.register_blueprint(hero_bp, url_prefix="/api/hero")
 
     # Simple health route
     @app.route("/")

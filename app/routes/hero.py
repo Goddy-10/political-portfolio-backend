@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.database import db
 from app.models import HeroImage
 
-hero_bp = Blueprint("hero_bp", __name__, url_prefix="/api")
+hero_bp = Blueprint("hero_bp", __name__, url_prefix="/api/hero")
 
 @hero_bp.route("/hero", methods=["GET"])
 def get_hero():
