@@ -2,14 +2,14 @@ from flask import Blueprint, request, jsonify
 from app.database import db
 from app.models import HeroImage
 
-hero_bp = Blueprint("hero_bp", __name__, url_prefix="/api/hero")
+hero_bp = Blueprint("hero_bp", __name__)
 
-@hero_bp.route("/hero", methods=["GET"])
+@hero_bp.route("/", methods=["GET"])
 def get_hero():
     hero = HeroImage.query.first()
     return jsonify({"image_url": hero.image_url if hero else None})
 
-@hero_bp.route("/hero", methods=["POST"])
+@hero_bp.route("/", methods=["POST"])
 def set_hero():
     data = request.get_json()
     image_url = data.get("image_url")
