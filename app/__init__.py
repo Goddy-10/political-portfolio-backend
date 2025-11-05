@@ -23,7 +23,7 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
 
     # Load configuration from instance/config.py
-    app.config.from_pyfile("config.py", silent=False)
+    app.config.from_pyfile("../instance/config.py", silent=False)
 
     # Enable CORS for the frontend (React)
     # CORS(app, resources={r"/*":{"origins":["http://localhost:5173"]}})
