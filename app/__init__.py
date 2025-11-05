@@ -27,7 +27,7 @@ def create_app():
 
     # Enable CORS for the frontend (React)
     # CORS(app, resources={r"/*":{"origins":["http://localhost:5173"]}})
-    CORS(app, origins=["http://localhost:5173", "https://thuranirakathiai.vercel.app/"], supports_credentials=True)
+    CORS(app, origins=["http://localhost:5173", "https://thuranirakathiai.vercel.app"], supports_credentials=True)
 
     # Initialize extensions
     db.init_app(app)
